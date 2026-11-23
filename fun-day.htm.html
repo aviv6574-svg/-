@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>יום כיף בשבילך 💖</title>
+<style>
+:root{--bg:#fff5f7;--card:#ffffff;--text:#3a2230;--muted:#8a6b78;--accent:#e0457b;--accent2:#ffd6e3;--line:#f3c9d7;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1218;--card:#2a1a23;--text:#f6e6ed;--muted:#c49bae;--accent:#ff6b9d;--accent2:#4a2535;--line:#4a2d3b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1d1218;--card:#2a1a23;--text:#f6e6ed;--muted:#c49bae;--accent:#ff6b9d;--accent2:#4a2535;--line:#4a2d3b;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;line-height:1.5}
+main{max-width:560px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:28px;text-align:center;margin:8px 0 4px}
+.sub{text-align:center;color:var(--muted);margin:0 0 20px}
+section{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:16px}
+h2{font-size:18px;margin:0 0 12px}
+.wd,.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.wd div{text-align:center;font-size:12px;color:var(--muted)}
+.cal{margin-top:6px}
+.d{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:12px;padding:8px 0;font:inherit;cursor:pointer;line-height:1.2}
+.d small{display:block;font-size:10px;color:var(--muted)}
+.d.we{background:var(--accent2)}
+.d.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.d.on small{color:#fff}
+.acts{display:grid;gap:8px}
+.a{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer}
+.a input{accent-color:var(--accent);width:18px;height:18px;margin:0}
+.a.on{background:var(--accent2);border-color:var(--accent)}
+textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px;font:inherit;background:transparent;color:var(--text);min-height:70px}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px;font:inherit;font-weight:700;font-size:17px;background:var(--accent);color:#fff;cursor:pointer;text-align:center;text-decoration:none;margin-top:10px}
+.btn.alt{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btn[aria-disabled="true"]{opacity:.45;pointer-events:none}
+#sum{color:var(--muted);text-align:center;margin:0 0 6px;min-height:24px}
+</style>
+</head>
+<body>
+<main>
+<h1>יום כיף בשבילך 💖</h1>
+<p class="sub">בחרי תאריך, סמני מה בא לך, ושלחי לי. אני דואג לכל השאר.</p>
+
+<section>
+<h2>📅 איזה יום מתאים לך?</h2>
+<div class="wd"><div>א׳</div><div>ב׳</div><div>ג׳</div><div>ד׳</div><div>ה׳</div><div>ו׳</div><div>ש׳</div></div>
+<div class="cal" id="cal"></div>
+</section>
+
+<section>
+<h2>✨ מה נכניס ליום?</h2>
+<div class="acts" id="acts"></div>
+</section>
+
+<section>
+<h2>💌 משהו שחשוב לי לדעת?</h2>
+<textarea id="note" placeholder="בקשות מיוחדות, אלרגיות, שעה מועדפת…"></textarea>
+</section>
+
+<p id="sum"></p>
+<a class="btn" id="wa" href="#" target="_blank" rel="noopener" aria-disabled="true">שליחה בוואטסאפ 💬</a>
+<button class="btn alt" id="cp" type="button">העתקת ההודעה</button>
+</main>
+
+<script>
+var DN=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+var MN=['ינו׳','פבר׳','מרץ','אפר׳','מאי','יוני','יולי','אוג׳','ספט׳','אוק׳','נוב׳','דצמ׳'];
+var ACTS=[
+['🍳','ארוחת בוקר למיטה',1],['💆‍♀️','מסאז׳ מפנק',1],['🛁','אמבטיה עם קצף ונרות',0],
+['🌹','זר פרחים',0],['🧖‍♀️','ספא או ג׳קוזי',0],['🧺','פיקניק בטבע',0],
+['🍷','ארוחת ערב רומנטית',0],['🎬','ערב סרט עם חטיפים',0],['☕','בראנץ׳ בבית קפה',0],
+['🌅','שקיעה על החוף',0],['💅','יום טיפוח: מניקור ופדיקור',0],
+['🎁','הפתעה קטנה',0],['🎶','פלייליסט רומנטי',0],['😴','יום בלי אחריות: אני מטפל בהכול',0]
+];
+var sel=null,selLabel='',chosen={};
+var cal=document.getElementById('cal'),acts=document.getElementById('acts');
+var t=new Date();t.setHours(12,0,0,0);
+var first=new Date(t);first.setDate(t.getDate()+1);
+for(var k=0;k<first.getDay();k++){cal.appendChild(document.createElement('span'));}
+for(var i=1;i<=35;i++){
+  var d=new Date(t);d.setDate(t.getDate()+i);
+  var b=document.createElement('button');b.type='button';
+  b.className='d'+(d.getDay()>=5?' we':'');
+  var lbl='יום '+DN[d.getDay()]+', '+d.getDate()+' ב'+MN[d.getMonth()];
+  b.innerHTML=d.getDate()+'<small>'+MN[d.getMonth()]+'</small>';
+  b.setAttribute('data-l',lbl);
+  b.onclick=function(){
+    var all=cal.querySelectorAll('.d');
+    for(var j=0;j<all.length;j++)all[j].classList.remove('on');
+    this.classList.add('on');selLabel=this.getAttribute('data-l');upd();
+  };
+  cal.appendChild(b);
+}
+ACTS.forEach(function(a,i){
+  var l=document.createElement('label');l.className='a'+(a[2]?' on':'');
+  var c=document.createElement('input');c.type='checkbox';c.checked=!!a[2];
+  chosen[i]=!!a[2];
+  c.onchange=function(){chosen[i]=c.checked;l.classList.toggle('on',c.checked);upd();};
+  var s=document.createElement('span');s.textContent=a[0]+' '+a[1];
+  l.appendChild(c);l.appendChild(s);acts.appendChild(l);
+});
+document.getElementById('note').oninput=upd;
+function msg(){
+  var list=ACTS.filter(function(a,i){return chosen[i];}).map(function(a){return a[0]+' '+a[1];});
+  var n=document.getElementById('note').value.trim();
+  var m='היי מאמי 💖 בחרתי את יום הכיף שלי!\n📅 '+selLabel+'\n\nמה שבא לי:\n'+(list.length?list.join('\n'):'הפתעה שלך 😉');
+  if(n)m+='\n\n💌 '+n;
+  return m;
+}
+function upd(){
+  var wa=document.getElementById('wa');
+  document.getElementById('sum').textContent=selLabel?('נבחר: '+selLabel):'בחרי תאריך כדי להמשיך';
+  if(selLabel){wa.setAttribute('aria-disabled','false');wa.href='https://wa.me/?text='+encodeURIComponent(msg());}
+  else{wa.setAttribute('aria-disabled','true');wa.href='#';}
+}
+document.getElementById('cp').onclick=function(){
+  if(!selLabel){document.getElementById('sum').textContent='בחרי תאריך קודם 🙂';return;}
+  var btn=this;
+  try{navigator.clipboard.writeText(msg()).then(function(){btn.textContent='הועתק ✓';},function(){btn.textContent='לא הצלחתי להעתיק';});}
+  catch(e){btn.textContent='לא הצלחתי להעתיק';}
+};
+upd();
+</script>
+</body>
+</html>
